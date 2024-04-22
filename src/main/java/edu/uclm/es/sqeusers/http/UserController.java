@@ -13,15 +13,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
 import edu.uclm.es.sqeusers.model.CredencialesRegistro;
 import edu.uclm.es.sqeusers.model.User;
 import edu.uclm.es.sqeusers.services.UserService;
-
-
 
 @RestController
 @RequestMapping("users")
@@ -47,13 +44,14 @@ public class UserController {
         result.put("token", this.userService.login(user));
         return result;
     }
-
+    /* 
     @GetMapping("/validarToken")
     public void validarToken(@RequestParam String token) {
         this.userService.validarToken(token);
-    }
-    @GetMapping("/validarToken2/{token}")
-    public void validarToken2(@PathVariable String token) {
+    */
+    @GetMapping("/validarToken/{token}")
+    public void validarToken(@PathVariable String token) {
+        System.out.println("Token B_U: " + token);
         this.userService.validarToken(token);
     }
 

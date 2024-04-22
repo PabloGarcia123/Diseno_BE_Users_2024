@@ -1,7 +1,7 @@
 package edu.uclm.es.sqeusers.model;
 
 public class Token {
-    private final static int DURACION = 15000;
+    private final static int DURACION = 120000;
 
     private String id;
     private User user;

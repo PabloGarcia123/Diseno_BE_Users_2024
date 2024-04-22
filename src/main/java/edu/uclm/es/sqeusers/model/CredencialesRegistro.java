@@ -12,14 +12,14 @@ public class CredencialesRegistro {
 
 
     public void comprobar(){
-        if (pwd1 != pwd2) {
+        if (!pwd1.equals(pwd2)) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Las contraseñas no coinciden");
         }
         if (pwd1.length() < 4) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "La contraseña debe tener al menos 4 caracteres");
         }
-        
     }
+    
 
     public String getEmail() {
         return email;
