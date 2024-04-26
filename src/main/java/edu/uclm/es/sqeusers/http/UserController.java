@@ -1,5 +1,6 @@
 package edu.uclm.es.sqeusers.http;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,17 +36,19 @@ public class UserController {
         User user = new User();
         user.setEmail(cr.getEmail());
         user.setPwd(cr.getPwd1());
-
         this.userService.registrar(user);
     }
 
     @PutMapping("/login")
-    public void login(@RequestBody User user) {
-        String email = info.get("email");
-        String pwd = info.get("pwd");
-        User user = this.userService.login(email, pwd);
-        if (user == null)
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Credenciales incorrectas");
+    public Map<String, String> login(@RequestBody User user) {
+    	Map<String,String> result= new HashMap<>();
+    	result.put("token", this.userService.login(user));
+    	return result;
+    }
+    
+    @GetMapping("/validarToken")
+    public void validarToken(@RequestParam String token) {
+    	this.userService.validarToken(token);
     }
 
 
