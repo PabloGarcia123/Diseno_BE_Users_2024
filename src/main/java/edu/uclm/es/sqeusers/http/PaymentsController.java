@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,13 +33,12 @@ public class PaymentsController {
         long total = (long) (importe*100);
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
             .setCurrency("eur")
-            .setAmount((long) (importe * 100))
+            .setAmount(total)
             .build();
 
         try {
             PaymentIntent intent = PaymentIntent.create(params);
-            JSONObject jso = new JSONObject(intent.toJson());
-            String clientSecret = jso.getString("client_secret");
+            String clientSecret = intent.getClientSecret();
             Map<String, String> result = new HashMap<>();
             result.put("clientSecret", clientSecret);
             return result;
@@ -48,6 +49,25 @@ public class PaymentsController {
         }
         
         
+    }
+    @PostMapping("/confirmarPago")
+    public Map<String, String> confirmarPago(@RequestBody Map<String, String> payload) {
+        String paymentIntentId = payload.get("token");
+
+        try {
+            PaymentIntent intent = PaymentIntent.retrieve(paymentIntentId);
+            intent = intent.confirm();
+
+            Map<String, String> result = new HashMap<>();
+            result.put("status", intent.getStatus());
+            return result;
+
+        } catch (StripeException e) {
+            e.printStackTrace();
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return error;
+        }
     }
     
 }
