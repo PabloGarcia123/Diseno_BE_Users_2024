@@ -58,5 +58,10 @@
 			<artifactId>json</artifactId>	
 			<version>20231013</version>
 		</dependency>
+		<dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 	</dependencies>
 </project>

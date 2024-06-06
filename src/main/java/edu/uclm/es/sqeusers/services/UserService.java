@@ -16,6 +16,9 @@ import edu.uclm.es.sqeusers.dao.UserDAO;
 import edu.uclm.es.sqeusers.model.Token;
 import edu.uclm.es.sqeusers.model.User;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 @Service
 public class UserService {
 
@@ -26,11 +29,17 @@ public class UserService {
 
     public void registrar(User user) {
         //this.users.put(user.getEmail(), user);
-        this.userDAO.save(user);
+    	try {
+            String contraseña_cod = codificar_pwd(user.getPwd());
+            user.setPwd(contraseña_cod);
+            this.userDAO.save(user);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"No se pudo registrar el usuario");
+        }
     }
 
     public String login(User user) {
-        Optional<User> optUser = this.userDAO.findByEmailAndPwd(user.getEmail(), user.getPwd());
+        Optional<User> optUser = this.userDAO.findByEmailAndPwd(user.getEmail(), codificar_pwd(user.getPwd()));
         if(optUser.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Credenciales incorrectas");
         }
@@ -59,6 +68,31 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token caducado");
         }
         token.incrementarTiempo();
+    }
+    private static String codificar_pwd(String password) {
+    	try {
+            // Crear una instancia de MessageDigest con SHA-512
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+
+            // Actualizar el MessageDigest con la contraseña en bytes
+            md.update(password.getBytes());
+
+            // Obtener el hash en bytes
+            byte[] bytes = md.digest();
+
+            // Convertir los bytes en una representación hexadecimal
+            StringBuilder sb = new StringBuilder();
+            for (byte b : bytes) {
+                sb.append(String.format("%02x", b));
+            }
+
+            // Devolver la contraseña codificada
+            return sb.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            // Manejar la excepción si el algoritmo SHA-512 no está disponible
+            throw new RuntimeException(e);
+        }
     }
 
 }
